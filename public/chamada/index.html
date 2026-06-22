@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="refresh" content="0"> <!-- evita cache -->
+<title>Pipa Ceilândia — Chamada de Pedidos</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700;800&display=swap');
+
+  :root {
+    --bg: #07070f;
+    --card: #101020;
+    --border: #1e1e33;
+    --lime: #c6ff00;
+    --pink: #ff2b97;
+    --cyan: #00d4ff;
+    --text: #ededf5;
+    --muted: #5e5e7a;
+    --ff-title: 'Archivo Black', sans-serif;
+    --ff-body: 'Inter', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--ff-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-image:
+      radial-gradient(ellipse 70% 50% at 10% 0%, rgba(198,255,0,.06) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 90% 10%, rgba(255,43,151,.07) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 50% 100%, rgba(0,212,255,.04) 0%, transparent 60%);
+  }
+
+  /* ── Header ── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 48px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(7,7,15,.8);
+    flex-shrink: 0;
+  }
+
+  .hdr-marca {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .hdr-logo {
+    height: 56px;
+    width: auto;
+    filter: drop-shadow(0 0 14px rgba(198,255,0,.5));
+    display: none;
+  }
+
+  .hdr-nome {
+    font-family: var(--ff-title);
+    font-size: 28px;
+    background: linear-gradient(130deg, var(--lime), #aaff00 50%, var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+
+  .hdr-nome em {
+    background: linear-gradient(130deg, var(--pink), #ff6bc0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-style: normal;
+  }
+
+  .hdr-sub {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 4px;
+  }
+
+  .hdr-relogio {
+    font-family: var(--ff-title);
+    font-size: 38px;
+    color: var(--text);
+    letter-spacing: 2px;
+    opacity: .7;
+  }
+
+  /* ── Título central ── */
+  .titulo-area {
+    text-align: center;
+    padding: 28px 40px 12px;
+    flex-shrink: 0;
+  }
+
+  .titulo-chamada {
+    font-family: var(--ff-title);
+    font-size: clamp(28px, 4vw, 56px);
+    background: linear-gradient(135deg, var(--lime), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+
+  .subtitulo-chamada {
+    font-size: clamp(13px, 1.5vw, 18px);
+    color: var(--muted);
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+  }
+
+  /* ── Grid de pedidos ── */
+  .grid-area {
+    flex: 1;
+    overflow: hidden;
+    padding: 20px 48px 36px;
+  }
+
+  .grid-vazio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--muted);
+    gap: 16px;
+  }
+
+  .grid-vazio-icon { font-size: 72px; opacity: .4; }
+  .grid-vazio-txt { font-size: clamp(16px, 2vw, 24px); letter-spacing: 1px; }
+
+  .pedidos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(clamp(200px, 20vw, 280px), 1fr));
+    gap: clamp(12px, 2vw, 24px);
+    align-content: start;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .pedido-card {
+    background: var(--card);
+    border: 2px solid var(--lime);
+    border-radius: 20px;
+    padding: clamp(16px, 2.5vw, 28px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+    box-shadow: 0 0 24px rgba(198,255,0,.18), 0 0 60px rgba(198,255,0,.06);
+    animation: entrar .45s cubic-bezier(.32,.72,0,1);
+    position: relative;
+  }
+
+  @keyframes entrar {
+    from { transform: scale(.8) translateY(20px); opacity: 0; }
+    to   { transform: scale(1) translateY(0);     opacity: 1; }
+  }
+
+  .pc-badge {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--lime);
+    color: #06060e;
+    font-family: var(--ff-title);
+    font-size: clamp(11px, 1.2vw, 15px);
+    padding: 3px 16px;
+    border-radius: 999px;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .pc-nome {
+    font-family: var(--ff-title);
+    font-size: clamp(22px, 3vw, 42px);
+    color: var(--text);
+    line-height: 1.1;
+    margin-top: 10px;
+  }
+
+  .pc-pronto-tag {
+    background: rgba(198,255,0,.12);
+    color: var(--lime);
+    border: 1px solid rgba(198,255,0,.3);
+    font-size: clamp(11px, 1vw, 14px);
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 999px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ── Pulsação nos cards ── */
+  @keyframes pulse-border {
+    0%, 100% { box-shadow: 0 0 24px rgba(198,255,0,.18), 0 0 60px rgba(198,255,0,.06); }
+    50%       { box-shadow: 0 0 32px rgba(198,255,0,.4),  0 0 80px rgba(198,255,0,.14); }
+  }
+
+  .pedido-card { animation: entrar .45s cubic-bezier(.32,.72,0,1), pulse-border 2.5s ease-in-out infinite; }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 10px;
+    font-size: 12px;
+    color: var(--muted);
+    flex-shrink: 0;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-marca">
+    <img id="hdrLogo" class="hdr-logo" src="" alt="Logo" style="display:none">
+    <div>
+      <div class="hdr-nome">PIPA<em>CEILÂNDIA</em></div>
+      <div class="hdr-sub">Retirada no balcão • Pague na hora</div>
+    </div>
+  </div>
+  <div class="hdr-relogio" id="relogio">--:--</div>
+</header>
+
+<div class="titulo-area">
+  <div class="titulo-chamada">✅ Pedidos Prontos</div>
+  <div class="subtitulo-chamada">Venha retirar no balcão</div>
+</div>
+
+<div class="grid-area" id="gridArea">
+  <div class="grid-vazio" id="griVazio">
+    <div class="grid-vazio-icon">🌴</div>
+    <div class="grid-vazio-txt">Nenhum pedido pronto no momento</div>
+  </div>
+  <div class="pedidos-grid" id="pedidosGrid" style="display:none"></div>
+</div>
+
+<footer>Atualiza automaticamente · <span id="ultimaAtu">--:--:--</span></footer>
+
+<script>
+// ── Relógio ──────────────────────────────────────────────────
+function atualizarRelogio() {
+  const agora = new Date();
+  document.getElementById("relogio").textContent =
+    agora.toLocaleTimeString("pt-BR", { hour:"2-digit", minute:"2-digit" });
+}
+setInterval(atualizarRelogio, 1000);
+atualizarRelogio();
+
+// ── Som de chamada ───────────────────────────────────────────
+let idsAnteriores = new Set();
+
+function tocarChamada() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    // "Ding ding" alegre
+    [[880, 0], [1047, 0.2], [880, 0.4], [1318, 0.6]].forEach(([freq, t]) => {
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = "sine";
+      gain.gain.setValueAtTime(0.22, ctx.currentTime + t);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.4);
+      osc.start(ctx.currentTime + t);
+      osc.stop(ctx.currentTime + t + 0.45);
+    });
+  } catch {}
+}
+
+// ── Polling ──────────────────────────────────────────────────
+async function buscarPedidosProntos() {
+  try {
+    const r = await fetch("/api/chamada/pedidos-prontos");
+    const lista = await r.json();
+
+    const novosIds = new Set(lista.map(p => p.id));
+    const temNovos = [...novosIds].some(id => !idsAnteriores.has(id));
+    if (temNovos && idsAnteriores.size > 0) tocarChamada();
+    idsAnteriores = novosIds;
+
+    renderPedidos(lista);
+    document.getElementById("ultimaAtu").textContent =
+      new Date().toLocaleTimeString("pt-BR");
+  } catch {}
+}
+
+function renderPedidos(lista) {
+  const vazio = document.getElementById("griVazio");
+  const grid  = document.getElementById("pedidosGrid");
+
+  if (!lista.length) {
+    vazio.style.display = "flex";
+    grid.style.display  = "none";
+    return;
+  }
+
+  vazio.style.display = "none";
+  grid.style.display  = "grid";
+
+  grid.innerHTML = lista.map(p => `
+    <div class="pedido-card">
+      <div class="pc-badge">#${String(p.id).padStart(3,"0")}</div>
+      <div class="pc-nome">${escHtml(p.nome_cliente)}</div>
+      <div class="pc-pronto-tag">✅ Pronto!</div>
+    </div>
+  `).join("");
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+buscarPedidosProntos();
+setInterval(buscarPedidosProntos, 5000);
+
+// Clique em qualquer lugar inicia AudioContext (obrigatoriedade do browser)
+document.addEventListener("click", () => {
+  try { new (window.AudioContext || window.webkitAudioContext)().resume(); } catch {}
+}, { once: true });
+
+// Carrega logo dinamicamente (suporta .png/.jpg/.webp etc.)
+(async () => {
+  try {
+    const r = await fetch("/api/logo");
+    if (r.ok) {
+      const img = document.getElementById("hdrLogo");
+      img.src = r.url;
+      img.style.display = "block";
+      img.onerror = () => { img.style.display = "none"; };
+    }
+  } catch {}
+})();
+</script>
+</body>
+</html>

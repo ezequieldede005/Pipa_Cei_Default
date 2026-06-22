@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Pipa Ceilândia</title>
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="login-page" id="body">
+
+<!-- ══ TELA DE LOGIN ══════════════════════════════════════ -->
+<div id="telaLogin">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="marca-nome">PIPA<em>CEILÂNDIA</em></div>
+      <div class="marca-sub">painel administrativo</div>
+    </div>
+    <div id="loginErro" class="erro-msg" style="display:none"></div>
+    <div class="campo"><label>Usuário</label><input id="lUser" type="text" placeholder="admin"></div>
+    <div class="campo"><label>Senha</label><input id="lSenha" type="password" placeholder="••••••"></div>
+    <button class="btn-primary" id="btnLogin">Entrar</button>
+  </div>
+</div>
+
+<!-- ══ PAINEL PRINCIPAL ═══════════════════════════════════ -->
+<div id="painelAdmin" style="display:none">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="marca-nome" style="font-size:16px">PIPA<em>CEILÂNDIA</em></span>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item on" data-aba="pedidos">📋 Pedidos</button>
+      <button class="nav-item" data-aba="produtos">🍹 Produtos</button>
+      <button class="nav-item" data-aba="estoque">📦 Estoque</button>
+      <button class="nav-item" data-aba="promocoes">🔥 Promoções</button>
+      <button class="nav-item" data-aba="promo-grupo">🎯 Combos / Grupo</button>
+      <button class="nav-item" data-aba="relatorio">📊 Relatório</button>
+      <button class="nav-item" data-aba="compras">🛒 Lista de Compras</button>
+      <button class="nav-item" data-aba="perfil">⚙️ Perfil</button>
+    </nav>
+    <button class="btn-logout" id="btnLogout">Sair</button>
+  </aside>
+
+  <!-- Conteúdo -->
+  <div class="conteudo">
+    <!-- Topbar mobile -->
+    <div class="topbar">
+      <button class="btn-menu" id="btnMenu">☰</button>
+      <span id="topbarTitulo">Pedidos</span>
+      <div class="notif-area">
+        <button class="btn-notif" id="btnNotif" title="Notificações">🔔 <span id="notifBadge" style="display:none" class="badge">0</span></button>
+      </div>
+    </div>
+
+    <!-- Painel de notificações -->
+    <div class="notif-panel hidden" id="notifPanel">
+      <div class="notif-header">
+        <strong>Alertas de Estoque</strong>
+        <button onclick="fecharNotif()">✕</button>
+      </div>
+      <div id="notifLista"></div>
+    </div>
+
+    <!-- ABA: Pedidos -->
+    <div class="aba on" id="aba-pedidos">
+      <div class="aba-header">
+        <h1>Pedidos</h1>
+        <div class="filtros" id="filtrosPedidos">
+          <button class="chip on" data-f="ativos">Ativos</button>
+          <button class="chip" data-f="todos">Todos</button>
+          <button class="chip" data-f="novo">Novos</button>
+          <button class="chip" data-f="preparando">Preparando</button>
+          <button class="chip" data-f="pronto">Prontos</button>
+          <button class="chip" data-f="entregue">Entregues</button>
+        </div>
+      </div>
+      <div class="grade" id="gradePedidos"></div>
+    </div>
+
+    <!-- ABA: Produtos -->
+    <div class="aba" id="aba-produtos">
+      <div class="aba-header">
+        <h1>Produtos</h1>
+        <button class="btn-primary" style="width:auto;padding:10px 20px" id="btnNovoProduto">+ Novo produto</button>
+      </div>
+      <div class="filtro-busca">
+        <input id="buscaProduto" type="search" placeholder="Buscar produto...">
+      </div>
+      <div id="listaProdutos"></div>
+    </div>
+
+    <!-- ABA: Estoque -->
+    <div class="aba" id="aba-estoque">
+      <div class="aba-header"><h1>Controle de Estoque</h1></div>
+      <p style="color:var(--muted);margin-bottom:16px">Registre entradas quando receber mercadoria. O sistema desconta automaticamente nos pedidos.</p>
+      <div class="filtro-busca">
+        <input id="buscaEstoque" type="search" placeholder="Buscar produto...">
+      </div>
+      <div id="listaEstoque"></div>
+    </div>
+
+    <!-- ABA: Promoções -->
+    <div class="aba" id="aba-promocoes">
+      <div class="aba-header">
+        <h1>Promoções</h1>
+        <button class="btn-primary" style="width:auto;padding:10px 20px" id="btnNovaPromo">+ Nova promoção</button>
+      </div>
+      <div id="listaPromos"></div>
+    </div>
+
+    <!-- ABA: Promoções em Grupo -->
+    <div class="aba" id="aba-promo-grupo">
+      <div class="aba-header">
+        <h1>Combos / Promoções em Grupo</h1>
+        <button class="btn-primary" style="width:auto;padding:10px 20px" id="btnNovaPromoGrupo">+ Novo combo</button>
+      </div>
+      <p style="color:var(--muted);margin-bottom:16px;font-size:13px">Ex: "2 caipirinhas por R$18", "3 drinks por R$25". Pode aplicar a um produto específico ou a toda uma categoria.</p>
+      <div id="listaPromoGrupo"></div>
+    </div>
+
+    <!-- ABA: Relatório -->
+    <div class="aba" id="aba-relatorio">
+      <div class="aba-header"><h1>Relatório de Vendas</h1></div>
+      <div class="filtro-data">
+        <div class="campo"><label>De</label><input type="date" id="relDe"></div>
+        <div class="campo"><label>Até</label><input type="date" id="relAte"></div>
+        <button class="btn-primary" style="width:auto;padding:11px 22px;align-self:flex-end" id="btnRelatorio">Gerar</button>
+      </div>
+      <div id="relConteudo"></div>
+    </div>
+
+    <!-- ABA: Lista de Compras -->
+    <div class="aba" id="aba-compras">
+      <div class="aba-header">
+        <h1>Lista de Compras</h1>
+        <button class="btn-secondary" style="width:auto;padding:10px 18px" id="btnRecarregarCompras">↻ Atualizar</button>
+      </div>
+      <p style="color:var(--muted);margin-bottom:16px">Calculado com base nas vendas dos últimos 30 dias. Produtos com saída maior aparecem primeiro.</p>
+      <div id="listaCompras"></div>
+    </div>
+
+    <!-- ABA: Perfil -->
+    <div class="aba" id="aba-perfil">
+      <div class="aba-header"><h1>Perfil & Configurações</h1></div>
+      <div class="form-card">
+        <h3>Dados do Admin</h3>
+        <div class="campo"><label>Nome</label><input id="pNome" type="text"></div>
+        <div class="campo"><label>Usuário (login)</label><input id="pUsuario" type="text"></div>
+        <div class="campo"><label>WhatsApp (com DDD, só números)</label><input id="pWhats" type="text" placeholder="61984889679"></div>
+        <h3 style="margin-top:20px">Trocar senha</h3>
+        <div class="campo"><label>Senha atual</label><input id="pSenhaAtual" type="password"></div>
+        <div class="campo"><label>Nova senha</label><input id="pNovaSenha" type="password"></div>
+        <button class="btn-primary" id="btnSalvarPerfil">Salvar alterações</button>
+        <div id="perfilMsg" style="margin-top:10px;font-size:13px"></div>
+        <hr style="border-color:var(--border);margin:24px 0">
+        <h3>Logo da Loja</h3>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Aparece no cabeçalho do site do cliente. Recomendado: PNG com fundo transparente.</p>
+        <input type="file" id="logoInput" accept="image/*" style="margin-bottom:10px">
+        <button class="btn-primary" id="btnUploadLogo">Enviar logo</button>
+        <div id="logoMsg" style="margin-top:8px;font-size:13px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal produto (novo / editar) -->
+<div class="overlay hidden" id="modalProduto">
+  <div class="sheet" style="max-height:95vh">
+    <div class="sheet-head">
+      <h2 id="modalProdutoTitulo">Novo Produto</h2>
+      <button class="btn-close" onclick="fecharModalProduto()">✕</button>
+    </div>
+    <form id="formProduto" onsubmit="salvarProduto(event)">
+      <input type="hidden" id="mpId">
+      <div class="form-2col">
+        <div class="campo"><label>Categoria *</label>
+          <input id="mpCategoria" list="listaCats" placeholder="Ex: Drinks do Pipa" required>
+          <datalist id="listaCats"></datalist>
+        </div>
+        <div class="campo"><label>Nome *</label><input id="mpNome" required placeholder="Ex: Vampirão"></div>
+      </div>
+      <div class="campo"><label>Descrição</label><textarea id="mpDesc" placeholder="Ingredientes, sabor..."></textarea></div>
+      <div class="form-2col">
+        <div class="campo"><label>Preço (R$)</label><input id="mpPreco" type="number" step="0.01" min="0" placeholder="0.00"></div>
+        <div class="campo"><label>Estoque inicial</label><input id="mpEstoque" type="number" min="0" placeholder="0"></div>
+      </div>
+      <div class="campo"><label>Estoque mínimo (alerta abaixo deste)</label><input id="mpEstMin" type="number" min="0" placeholder="5"></div>
+      <div class="campo">
+        <label>Foto do produto</label>
+        <input type="file" id="mpFoto" accept="image/*">
+        <img id="mpFotoPreview" src="" alt="" style="display:none;margin-top:8px;max-height:140px;border-radius:8px;object-fit:cover">
+        <button type="button" id="btnRemoverFoto" class="btn-secondary" style="display:none;margin-top:8px;font-size:12px;padding:6px 12px;width:auto" onclick="removerFotoProduto()">🗑 Remover foto</button>
+      </div>
+      <div class="campo">
+        <label>Status</label>
+        <select id="mpAtivo"><option value="true">Ativo (visível no cardápio)</option><option value="false">Inativo (oculto)</option></select>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <button type="submit" class="btn-primary">Salvar</button>
+        <button type="button" class="btn-secondary" onclick="fecharModalProduto()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal promoção -->
+<div class="overlay hidden" id="modalPromo">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h2 id="modalPromoTitulo">Nova Promoção</h2>
+      <button class="btn-close" onclick="fecharModalPromo()">✕</button>
+    </div>
+    <form id="formPromo" onsubmit="salvarPromo(event)">
+      <input type="hidden" id="prId">
+      <div class="campo"><label>Produto *</label>
+        <select id="prProduto" required></select>
+      </div>
+      <div class="campo"><label>Nome da promoção</label><input id="prTitulo" placeholder="Ex: Happy Hour, Promo Sexta..."></div>
+      <div class="campo"><label>Preço promocional (R$) *</label><input id="prPreco" type="number" step="0.01" min="0" required></div>
+      <div class="campo"><label>Tipo</label>
+        <select id="prTipo" onchange="toggleCamposPromo()">
+          <option value="temporaria">Temporária (datas específicas)</option>
+          <option value="diaria">Diária (todo dia em um horário)</option>
+        </select>
+      </div>
+      <div id="camposTemporaria">
+        <div class="form-2col">
+          <div class="campo"><label>Data início</label><input id="prDataIni" type="date"></div>
+          <div class="campo"><label>Data fim</label><input id="prDataFim" type="date"></div>
+        </div>
+      </div>
+      <div id="camposDiaria" style="display:none">
+        <div class="form-2col">
+          <div class="campo"><label>Hora início</label><input id="prHoraIni" type="time"></div>
+          <div class="campo"><label>Hora fim</label><input id="prHoraFim" type="time"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <button type="submit" class="btn-primary">Salvar</button>
+        <button type="button" class="btn-secondary" onclick="fecharModalPromo()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal estoque: lançar entrada -->
+<div class="overlay hidden" id="modalEstoque">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h2 id="modalEstoqueTitulo">Lançar Entrada</h2>
+      <button class="btn-close" onclick="fecharModalEstoque()">✕</button>
+    </div>
+    <form id="formEstoque" onsubmit="salvarEstoque(event)">
+      <input type="hidden" id="esProdId">
+      <p id="esProdNome" style="color:var(--lime);font-weight:700;margin-bottom:16px"></p>
+      <div class="campo"><label>Tipo de lançamento</label>
+        <select id="esTipo">
+          <option value="entrada">Entrada (recebi mercadoria)</option>
+          <option value="ajuste_manual">Ajuste manual (correção)</option>
+        </select>
+      </div>
+      <div class="campo"><label>Quantidade</label>
+        <input id="esQtd" type="number" min="1" required placeholder="Quantas unidades você recebeu?">
+      </div>
+      <div class="campo"><label>Observação</label>
+        <input id="esObs" placeholder="Opcional: fornecedor, nota fiscal...">
+      </div>
+      <button type="submit" class="btn-primary">Lançar</button>
+    </form>
+  </div>
+</div>
+
+<!-- Modal promoção em grupo -->
+<div class="overlay hidden" id="modalPromoGrupo">
+  <div class="sheet" style="max-height:95vh">
+    <div class="sheet-head">
+      <h2 id="modalPromoGrupoTitulo">Novo Combo / Promo Grupo</h2>
+      <button class="btn-close" onclick="fecharModalPromoGrupo()">✕</button>
+    </div>
+    <form id="formPromoGrupo" onsubmit="salvarPromoGrupo(event)">
+      <input type="hidden" id="pgId">
+
+      <!-- Nome + qtd + preço -->
+      <div class="campo"><label>Nome do combo *</label>
+        <input id="pgTitulo" required placeholder="Ex: Happy Hour — 3 drinks"></div>
+      <div class="form-2col">
+        <div class="campo"><label>Quantidade *</label>
+          <input id="pgQtd" type="number" min="1" max="20" required placeholder="Ex: 2"></div>
+        <div class="campo"><label>Preço do combo (R$) *</label>
+          <input id="pgPreco" type="number" step="0.01" min="0" required placeholder="Ex: 18.00"></div>
+      </div>
+
+      <!-- Alvo -->
+      <div class="campo"><label>Aplica a</label>
+        <select id="pgAlvoTipo" onchange="toggleAlvoGrupo()">
+          <option value="produto">Produto específico</option>
+          <option value="categoria">Categoria inteira</option>
+          <option value="multiplos">Vários produtos à escolha</option>
+        </select>
+      </div>
+      <div id="campoAlvoProduto" class="campo"><label>Produto</label>
+        <select id="pgProduto"></select>
+      </div>
+      <div id="campoAlvoCategoria" class="campo" style="display:none"><label>Categoria</label>
+        <input id="pgCategoria" list="listaCatsGrupo" placeholder="Nome exato da categoria">
+        <datalist id="listaCatsGrupo"></datalist>
+      </div>
+      <div id="campoAlvoMultiplos" style="display:none">
+        <div class="campo"><label>Marque os produtos que entram no combo</label>
+          <div id="pgMultiLista" style="display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto;border:1.5px solid var(--border2);border-radius:var(--r-sm);padding:10px;background:var(--bg2)"></div>
+        </div>
+      </div>
+
+      <!-- Agenda -->
+      <div class="campo" style="margin-top:4px"><label>Quando vale</label>
+        <select id="pgTipoAgenda" onchange="toggleAgendaGrupo()">
+          <option value="sempre">Sempre ativa</option>
+          <option value="diaria">Todo dia — só num horário</option>
+          <option value="semanal">Dias da semana + horário</option>
+          <option value="temporaria">Período específico (datas)</option>
+        </select>
+      </div>
+
+      <div id="campoPgHorario" style="display:none">
+        <div class="form-2col">
+          <div class="campo"><label>Hora início</label><input id="pgHoraIni" type="time"></div>
+          <div class="campo"><label>Hora fim</label><input id="pgHoraFim" type="time"></div>
+        </div>
+      </div>
+
+      <div id="campoPgDias" style="display:none">
+        <div class="campo"><label>Dias da semana</label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px" id="pgDiasSemana">
+            <label class="dia-chip"><input type="checkbox" value="0"> Dom</label>
+            <label class="dia-chip"><input type="checkbox" value="1"> Seg</label>
+            <label class="dia-chip"><input type="checkbox" value="2"> Ter</label>
+            <label class="dia-chip"><input type="checkbox" value="3"> Qua</label>
+            <label class="dia-chip"><input type="checkbox" value="4"> Qui</label>
+            <label class="dia-chip"><input type="checkbox" value="5"> Sex</label>
+            <label class="dia-chip"><input type="checkbox" value="6"> Sáb</label>
+          </div>
+        </div>
+      </div>
+
+      <div id="campoPgDatas" style="display:none">
+        <div class="form-2col">
+          <div class="campo"><label>Data início (DD/MM/AAAA)</label><input id="pgDataIni" placeholder="Ex: 25/12/2025" maxlength="10"></div>
+          <div class="campo"><label>Data fim (DD/MM/AAAA)</label><input id="pgDataFim" placeholder="Ex: 31/12/2025" maxlength="10"></div>
+        </div>
+      </div>
+
+      <!-- Repetir / pausar -->
+      <div class="campo" style="display:flex;align-items:center;gap:12px;background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--r-sm);padding:12px 15px;margin-top:4px">
+        <input type="checkbox" id="pgRepetir" style="width:18px;height:18px;flex-shrink:0" checked>
+        <label for="pgRepetir" style="margin:0;font-size:13px;text-transform:none;letter-spacing:0;color:var(--text2);cursor:pointer">
+          🔁 Repetir automaticamente (como despertador) — desmarque para pausar ao fim do período
+        </label>
+      </div>
+      <div class="campo" style="display:flex;align-items:center;gap:12px;background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--r-sm);padding:12px 15px">
+        <input type="checkbox" id="pgAlarme" style="width:18px;height:18px;flex-shrink:0">
+        <label for="pgAlarme" style="margin:0;font-size:13px;text-transform:none;letter-spacing:0;color:var(--text2);cursor:pointer">
+          🔔 Alarme sonoro — repetir tom a cada 30s no site do cliente enquanto ativa
+        </label>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <button type="submit" class="btn-primary">Salvar</button>
+        <button type="button" class="btn-secondary" onclick="fecharModalPromoGrupo()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="/js/admin.js"></script>
+</body>
+</html>
